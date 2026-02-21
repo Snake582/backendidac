@@ -6,23 +6,33 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './users/entities/user.entity';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.enableCors({
-    origin: 'http://localhost:3001',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+  const configService = app.get(ConfigService);
 
+  // ✅ CORS dynamique pour Frontend
+  app.enableCors({
+  origin: configService.get('FRONTEND_URL') || '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+});
+
+  // ✅ Dossier pour fichiers uploadés
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
 
-  await app.listen(3000);
+  // ✅ PORT dynamique
+  const port = parseInt(configService.get('PORT') || '3000', 10);
 
-  // ✅ Récupérer le repository via Nest
+
+  await app.listen(port);
+  console.log(`🚀 Backend démarré sur le port ${port}`);
+
+  // ✅ Création automatique de l’admin
   const userRepository = app.get<Repository<User>>(getRepositoryToken(User));
 
   const adminEmail = 'contact@cabinetidac.sn';
@@ -42,7 +52,6 @@ async function bootstrap() {
     });
 
     await userRepository.save(admin);
-
     console.log('✅ Admin créé automatiquement');
   } else {
     console.log('ℹ️ Admin déjà existant');
