@@ -23,7 +23,7 @@ import { Image } from './biens/entities/image.entity';
 TypeOrmModule.forRootAsync({
   inject: [ConfigService],
   useFactory: (config: ConfigService) => ({
-    type: 'postgres',
+    type: 'mysql',
     host: config.get('DB_HOST'),
     port: Number(config.get('DB_PORT')),
     username: config.get('DB_USER'),
@@ -31,7 +31,6 @@ TypeOrmModule.forRootAsync({
     database: config.get('DB_NAME'),
     entities: [User, Bien, Image],
     synchronize: true,
-    ssl: false, // 👈 IMPORTANT
   }),
 }),
 
