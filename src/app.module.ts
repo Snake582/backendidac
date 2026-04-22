@@ -20,27 +20,19 @@ import { Image } from './biens/entities/image.entity';
     }),
 
     // ✅ TypeORM PostgreSQL avec SSL pour Render
-    TypeOrmModule.forRootAsync({
+TypeOrmModule.forRootAsync({
   inject: [ConfigService],
-  useFactory: (config: ConfigService) => {
-    const host = config.get('DB_HOST') || '';
-    const port = parseInt(config.get('DB_PORT') || '5432', 10);
-    const username = config.get('DB_USER') || '';
-    const password = config.get('DB_PASSWORD') || '';
-    const database = config.get('DB_NAME') || '';
-
-    return {
-      type: 'postgres',
-      host,
-      port,
-      username,
-      password,
-      database,
-      entities: [User, Bien, Image],
-      synchronize: true,
-      ssl: { rejectUnauthorized: false },
-    } as any;
-  },
+  useFactory: (config: ConfigService) => ({
+    type: 'postgres',
+    host: config.get('DB_HOST'),
+    port: Number(config.get('DB_PORT')),
+    username: config.get('DB_USER'),
+    password: config.get('DB_PASSWORD'),
+    database: config.get('DB_NAME'),
+    entities: [User, Bien, Image],
+    synchronize: true,
+    ssl: false, // 👈 IMPORTANT
+  }),
 }),
 
     UsersModule,

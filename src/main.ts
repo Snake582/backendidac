@@ -14,9 +14,12 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // ✅ CORS dynamique pour Frontend
-  app.enableCors({
-  origin: configService.get('FRONTEND_URL') || '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+app.enableCors({
+  origin: [
+    'http://localhost:3001',
+    'http://localhost:3000'
+  ],
+  methods: 'GET,POST,PUT,PATCH,DELETE',
   credentials: true,
 });
 
